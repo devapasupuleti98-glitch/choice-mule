@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="b3da47f3-eea4-4c87-8b26-f9158a9f6cb9" >
+		<http:listener-connection host="localhost" port="8081" />
+	</http:listener-config>
+	<flow name="devaFlow" doc:id="bf7b5864-4a3d-43a2-a870-a1e850da5fe6" >
+		<http:listener doc:name="Listener" doc:id="6868e23a-c7cd-4987-9c63-3718fe75b8d1" config-ref="HTTP_Listener_config" path="/deva"/>
+		<logger level="INFO" doc:name="Logger" doc:id="4214ad23-11d9-48ea-9eed-c19a101def4d" message="#[payload]"/>
+		<set-variable value="#[attributes.queryParams.operation]" doc:name="operations" doc:id="a4620e37-0817-47fa-9185-543ae9cd2bcf" variableName="operation"/>
+		<choice doc:name="Choice" doc:id="dc504be4-b058-4670-a7e9-fdbb6ca21f41" >
+			<when expression='#[vars.operation == "multiplication"]'>
+				<set-payload value="#[payload.number1 ++ payload.number2]" doc:name="Set Payload" doc:id="9507fc40-27e3-4360-a538-ba54a32de377" />
+			</when>
+			<when expression='#[vars.operation == "addition"]'>
+				<set-payload value="#[payload.number1 + payload.number2]" doc:name="Set Payload" doc:id="8a3726bd-29fd-4e9e-8bc1-80acb1d9f9d4" />
+			</when>
+			<otherwise >
+				<set-payload value='#["please select the right operation"]' doc:name="Set Payload" doc:id="0c7683e0-f836-45b9-a776-ebdb96e00d85" />
+			</otherwise>
+		</choice>
+		<logger level="INFO" doc:name="Logger" doc:id="fbfe3be1-8e3a-41be-9a58-f352d1eb5890" message="#[payload]"/>
+	</flow>
+</mule>
